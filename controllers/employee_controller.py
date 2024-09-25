@@ -1,0 +1,105 @@
+from odoo import http
+from odoo.http import request
+import json
+
+class EmployeeController(http.Controller):
+
+    @http.route('/api/employee', type='http', auth='user', methods=['POST'], csrf=False)
+    def create_employee(self, **kwargs):
+        try:
+            raw_data = request.httprequest.data.decode('utf-8')
+            data = json.loads(raw_data)
+
+            name = data.get('name')
+
+            record = request.env['res.partner'].sudo().create({
+                'name': name,
+            })
+
+            return request.make_response(
+                json.dumps({
+                    'status': 'success',
+                    'message': 'Data has been saved successfully!',
+                    'id': record.id
+                }),
+                headers=[('Content-Type', 'application/json')]
+            )
+
+        except Exception as e:
+            return request.make_response(
+                json.dumps({
+                    'status': 'error',
+                    'message': str(e)
+                }),
+                headers=[('Content-Type', 'application/json')]
+            )
+
+    @http.route('/api/employee/<int:employee_id>', type='http', auth='user', methods=['GET'], csrf=False)
+    def get_employee(self, employee_id, **kwargs):
+        try:
+            employee = request.env['hr.employee'].sudo().browse(employee_id)
+
+            if employee.exists():
+                return request.make_response(
+                    json.dumps({
+                        'status': 'success',
+                        'data': {
+                            'id': employee.id,
+                            'name': employee.name,
+                            'email': employee.work_email,
+                            'phone': employee.work_phone,
+                            'company': employee.company_id.name if employee.company_id else None,
+                            'department': employee.department_id.name if employee.department_id else None,
+                            'position': employee.job_id.name if employee.job_id else None,
+                        }
+                    }),
+                    headers=[('Content-Type', 'application/json')]
+                )
+            else:
+                return request.make_response(
+                    json.dumps({
+                        'status': 'error',
+                        'message': 'Record not found'
+                    }),
+                    headers=[('Content-Type', 'application/json')]
+                )
+        except Exception as e:
+            return request.make_response(
+                json.dumps({
+                    'status': 'error',
+                    'message': str(e)
+                }),
+                headers=[('Content-Type', 'application/json')]
+            )
+
+    @http.route('/api/employee/all', type='http', auth='user', methods=['GET'], csrf=False)
+    def get_all_employees(self, **kwargs):
+        try:
+            employees = request.env['hr.employee'].sudo().search([])
+
+            employee_list = [{
+                'id': employee.id,
+                'name': employee.name,
+                'email': employee.work_email,
+                'phone': employee.work_phone,
+                'company': employee.company_id.name if employee.company_id else None,
+                'department': employee.department_id.name if employee.department_id else None,
+                'position': employee.job_id.name if employee.job_id else None,
+            } for employee in employees]
+
+            return request.make_response(
+                json.dumps({
+                    'status': 'success',
+                    'data': employee_list
+                }),
+                headers=[('Content-Type', 'application/json')]
+            )
+
+        except Exception as e:
+            return request.make_response(
+                json.dumps({
+                    'status': 'error',
+                    'message': str(e)
+                }),
+                headers=[('Content-Type', 'application/json')]
+            )

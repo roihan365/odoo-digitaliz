@@ -4,7 +4,7 @@ import json
 
 class AuthController(http.Controller):
 
-    @http.route('/api/login', type='http', auth='public', methods=['POST'], csrf=False)
+    @http.route('/api/login', type='json', auth='public', methods=['POST'], csrf=False)
     def login(self, **kwargs):
         try:
             json_data = json.loads(request.httprequest.data)
@@ -12,57 +12,39 @@ class AuthController(http.Controller):
             password = json_data.get('password')
 
             if not username or not password:
-                return request.make_response(
-                    json.dumps({
+                return{
                         'status': 'error',
                         'message': 'Username and password are required'
-                    }),
-                    headers=[('Content-Type', 'application/json')]
-                )
+                    }
 
             uid = request.session.authenticate(request.session.db, username, password)
 
             if uid:
-                return request.make_response(
-                    json.dumps({
+                return {
                         'status': 'success',
                         'message': 'Login successful'
-                    }),
-                    headers=[('Content-Type', 'application/json')]
-                )
+                    }
             else:
-                return request.make_response(
-                    json.dumps({
+                return {
                         'status': 'error',
                         'message': 'Invalid credentials'
-                    }),
-                    headers=[('Content-Type', 'application/json')]
-                )
+                    }
         except Exception as e:
-            return request.make_response(
-                json.dumps({
+            return {
                     'status': 'error',
                     'message': str(e)
-                }),
-                headers=[('Content-Type', 'application/json')]
-            )
+                }
 
-    @http.route('/api/logout', type='http', auth='user', methods=['POST'], csrf=False)
+    @http.route('/api/logout', type='json', auth='user', methods=['POST'], csrf=False)
     def logout(self):
         try:
             request.session.logout()
-            return request.make_response(
-                json.dumps({
+            return {
                     'status': 'success',
                     'message': 'Logout successful'
-                }),
-                headers=[('Content-Type', 'application/json')]
-            )
+                }
         except Exception as e:
-            return request.make_response(
-                json.dumps({
+            return {
                     'status': 'error',
                     'message': str(e)
-                }),
-                headers=[('Content-Type', 'application/json')]
-            )
+                }

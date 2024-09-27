@@ -6,4 +6,4 @@ class Digitaliz(models.Model):
     _description = 'Digitaliz module'
 
     name = fields.Char(string='Name', required=True)
-    description = fields.Text(string='Description')
+    description = fields.Text(string='Description') 

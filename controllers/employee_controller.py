@@ -4,47 +4,21 @@ import json
 
 class EmployeeController(http.Controller):
 
-    @http.route('/api/employee', type='json', auth='user', methods=['POST'], csrf=False)
-    def create_employee(self, **kwargs):
-        try:
-            if not request.session.uid:
-                return {
-                        'status': 'error',
-                        'message': 'User not authenticated'
-                    }
-            raw_data = request.httprequest.data.decode('utf-8')
-            data = json.loads(raw_data)
+    import json
+from odoo import http
+from odoo.http import request
 
-            name = data.get('name')
+class ApiEmployeeController(http.Controller):
 
-            record = request.env['res.partner'].sudo().create({
-                'name': name,
-            })
-
-            return {
-                    'status': 'success',
-                    'message': 'Data has been saved successfully!',
-                    'id': record.id
-                }
-
-        except Exception as e:
-            return {
-                    'status': 'error',
-                    'message': str(e)
-                }
-
-    @http.route('/api/employee/<int:employee_id>', type='json', auth='user', methods=['GET'], csrf=False)
+    @http.route('/api/employee/<int:employee_id>', type='http', auth='apikey', methods=['GET'], csrf=False)
     def get_employee(self, employee_id, **kwargs):
         try:
-            if not request.session.uid:
-                return {
-                        'status': 'error',
-                        'message': 'User not authenticated'
-                    }
+            # Fetching the employee record based on ID
             employee = request.env['hr.employee'].sudo().browse(employee_id)
 
             if employee.exists():
-                return {
+                return request.make_response(
+                    json.dumps({
                         'status': 'success',
                         'data': {
                             'id': employee.id,
@@ -55,26 +29,31 @@ class EmployeeController(http.Controller):
                             'department': employee.department_id.name if employee.department_id else None,
                             'position': employee.job_id.name if employee.job_id else None,
                         }
-                    }
+                    }),
+                    headers=[('Content-Type', 'application/json')]
+                )
             else:
-                return {
+                return request.make_response(
+                    json.dumps({
                         'status': 'error',
                         'message': 'Record not found'
-                    }
+                    }),
+                    headers=[('Content-Type', 'application/json')]
+                )
         except Exception as e:
-            return {
+            return request.make_response(
+                json.dumps({
                     'status': 'error',
-                    'message': str(e)
-                }
+                    'message': str(e)  # This will help you capture the actual error
+                }),
+                headers=[('Content-Type', 'application/json')],
+                status=500  # Return a 500 status code
+            )
 
-    @http.route('/api/employee/all', type='json', auth='user', methods=['GET'], csrf=False)
+
+    @http.route('/api/employee/all', type='http', auth='apikey', methods=['GET'], csrf=False)
     def get_all_employees(self, **kwargs):
         try:
-            if not request.session.uid:
-                return {
-                        'status': 'error',
-                        'message': 'User not authenticated'
-                    }
             employees = request.env['hr.employee'].sudo().search([])
 
             employee_list = [{
@@ -87,13 +66,19 @@ class EmployeeController(http.Controller):
                 'position': employee.job_id.name if employee.job_id else None,
             } for employee in employees]
 
-            return {
+            return request.make_response(
+                json.dumps({
                     'status': 'success',
                     'data': employee_list
-                }
+                }),
+                headers=[('Content-Type', 'application/json')]
+            )
 
         except Exception as e:
-            return {
+            return request.make_response(
+                json.dumps({
                     'status': 'error',
                     'message': str(e)
-                }
+                }),
+                headers=[('Content-Type', 'application/json')]
+            )

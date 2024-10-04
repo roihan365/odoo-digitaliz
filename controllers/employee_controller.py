@@ -10,7 +10,7 @@ from odoo.http import request
 
 class ApiEmployeeController(http.Controller):
 
-    @http.route('/api/employee/<int:employee_id>', type='http', auth='apikey', methods=['GET'], csrf=False)
+    @http.route('/api/employee/<int:employee_id>', type='http', auth='apikey', methods=['GET'], csrf=False, cors='http://hulutalent.test')
     def get_employee(self, employee_id, **kwargs):
         try:
             # Fetching the employee record based on ID
@@ -51,7 +51,7 @@ class ApiEmployeeController(http.Controller):
             )
 
 
-    @http.route('/api/employee/all', type='http', auth='apikey', methods=['GET'], csrf=False)
+    @http.route('/api/employee/all', type='http', auth='apikey', methods=['GET'], csrf=False, cors='http://hulutalent.test')
     def get_all_employees(self, **kwargs):
         try:
             employees = request.env['hr.employee'].sudo().search([])

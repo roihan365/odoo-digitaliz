@@ -1,5 +1,3 @@
-# models/ir_http.py
-
 from odoo import models
 from odoo.http import request
 from werkzeug.exceptions import BadRequest
@@ -9,6 +7,10 @@ class IrHttp(models.AbstractModel):
 
     @classmethod
     def _auth_method_apikey(cls):
+        # Allow OPTIONS requests without API key
+        if request.httprequest.method == 'OPTIONS':
+            return  # Skip authentication for OPTIONS requests
+        
         api_key = request.httprequest.headers.get("Authorization")
         if not api_key:
             raise BadRequest("Authorization header with API key missing")

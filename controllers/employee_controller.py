@@ -4,12 +4,11 @@ import json
 
 class ApiEmployeeController(http.Controller):
 
-    # Utility function to add CORS headers
-    def _set_cors_headers(self, response):
+    def add_cors_headers(self, response):
+        # Add the necessary CORS headers to the response
         response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With'
-        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
         return response
 
     @http.route('/api/employee/<int:employee_id>', type='http', auth='apikey', methods=['GET'], csrf=False)
@@ -34,7 +33,7 @@ class ApiEmployeeController(http.Controller):
                     }),
                     headers=[('Content-Type', 'application/json')]
                 )
-                return self._set_cors_headers(response)
+                return self.add_cors_headers(response)
             else:
                 response = request.make_response(
                     json.dumps({
@@ -43,7 +42,7 @@ class ApiEmployeeController(http.Controller):
                     }),
                     headers=[('Content-Type', 'application/json')]
                 )
-                return self._set_cors_headers(response)
+                return self.add_cors_headers(response)
 
         except Exception as e:
             response = request.make_response(
@@ -54,7 +53,7 @@ class ApiEmployeeController(http.Controller):
                 headers=[('Content-Type', 'application/json')],
                 status=500  # Return a 500 status code
             )
-            return self._set_cors_headers(response)
+            return self.add_cors_headers(response)
 
     @http.route('/api/employee/all', type='http', auth='apikey', methods=['GET'], csrf=False)
     def get_all_employees(self, **kwargs):
@@ -78,7 +77,7 @@ class ApiEmployeeController(http.Controller):
                 }),
                 headers=[('Content-Type', 'application/json')]
             )
-            return self._set_cors_headers(response)
+            return self.add_cors_headers(response)
 
         except Exception as e:
             response = request.make_response(
@@ -88,4 +87,13 @@ class ApiEmployeeController(http.Controller):
                 }),
                 headers=[('Content-Type', 'application/json')]
             )
-            return self._set_cors_headers(response)
+            return self.add_cors_headers(response)
+
+    @http.route('/api/employee/options', type='http', auth='public', methods=['OPTIONS'], csrf=False)
+    def options(self, **kwargs):
+        # Handle preflight CORS requests
+        response = request.make_response(
+            '',
+            headers=[('Content-Type', 'text/plain')]
+        )
+        return self.add_cors_headers(response)

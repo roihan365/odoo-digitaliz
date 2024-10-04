@@ -6,7 +6,7 @@ class ApiEmployeeController(http.Controller):
 
     def cors_headers(self):
         return [
-            ('Access-Control-Allow-Origin', 'https://odoo.ahay.my.id'),  
+            ('Access-Control-Allow-Origin', '*'),  
             ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
             ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         ]

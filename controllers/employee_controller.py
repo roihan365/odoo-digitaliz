@@ -4,10 +4,22 @@ import json
 
 class ApiEmployeeController(http.Controller):
 
-    @http.route('/api/employee/<int:employee_id>', type='http', auth='apikey', methods=['GET'], csrf=False)
+    def cors_headers(self):
+        return [
+            ('Access-Control-Allow-Origin', 'https://odoo.ahay.my.id'),  
+            ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
+            ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+        ]
+
+    @http.route('/api/employee/<int:employee_id>', type='http', auth='apikey', methods=['GET', 'OPTIONS'], csrf=False)
     def get_employee(self, employee_id, **kwargs):
+        if request.httprequest.method == 'OPTIONS':
+            return request.make_response(
+                json.dumps({}),
+                headers=self.cors_headers()
+            )
+        
         try:
-            # Fetching the employee record based on ID
             employee = request.env['hr.employee'].sudo().browse(employee_id)
 
             if employee.exists():
@@ -24,12 +36,7 @@ class ApiEmployeeController(http.Controller):
                             'position': employee.job_id.name if employee.job_id else None,
                         }
                     }),
-                    headers=[
-                        ('Content-Type', 'application/json'),
-                        ('Access-Control-Allow-Origin', 'https://odoo.ahay.my.id'), 
-                        ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
-                        ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-                    ]
+                    headers=[('Content-Type', 'application/json')] + self.cors_headers()
                 )
             else:
                 return request.make_response(
@@ -37,31 +44,26 @@ class ApiEmployeeController(http.Controller):
                         'status': 'error',
                         'message': 'Record not found'
                     }),
-                    headers=[
-                        ('Content-Type', 'application/json'),
-                        ('Access-Control-Allow-Origin', 'https://odoo.ahay.my.id'), 
-                        ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
-                        ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-                    ]
+                    headers=[('Content-Type', 'application/json')] + self.cors_headers()
                 )
         except Exception as e:
             return request.make_response(
                 json.dumps({
                     'status': 'error',
-                    'message': str(e)  # This will help you capture the actual error
+                    'message': str(e)
                 }),
-                headers=[
-                    ('Content-Type', 'application/json'),
-                    ('Access-Control-Allow-Origin', 'https://odoo.ahay.my.id'), 
-                    ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
-                    ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-                ],
-                status=500  # Return a 500 status code
+                headers=[('Content-Type', 'application/json')] + self.cors_headers(),
+                status=500
             )
 
-
-    @http.route('/api/employee/all', type='http', auth='apikey', methods=['GET'], csrf=False)
+    @http.route('/api/employee/all', type='http', auth='apikey', methods=['GET', 'OPTIONS'], csrf=False)
     def get_all_employees(self, **kwargs):
+        if request.httprequest.method == 'OPTIONS':
+            return request.make_response(
+                json.dumps({}),
+                headers=self.cors_headers()
+            )
+
         try:
             employees = request.env['hr.employee'].sudo().search([])
 
@@ -80,12 +82,7 @@ class ApiEmployeeController(http.Controller):
                     'status': 'success',
                     'data': employee_list
                 }),
-                headers=[
-                    ('Content-Type', 'application/json'),
-                    ('Access-Control-Allow-Origin', 'https://odoo.ahay.my.id'),  
-                    ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
-                    ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-                ]
+                headers=[('Content-Type', 'application/json')] + self.cors_headers()
             )
 
         except Exception as e:
@@ -94,10 +91,5 @@ class ApiEmployeeController(http.Controller):
                     'status': 'error',
                     'message': str(e)
                 }),
-                headers=[
-                    ('Content-Type', 'application/json'),
-                    ('Access-Control-Allow-Origin', 'https://odoo.ahay.my.id'),  
-                    ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
-                    ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-                ]
+                headers=[('Content-Type', 'application/json')] + self.cors_headers()
             )

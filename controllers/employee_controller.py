@@ -8,7 +8,7 @@ class ApiEmployeeController(http.Controller):
         return [
             ('Access-Control-Allow-Origin', '*'),  
             ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
-            ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+            ('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
         ]
 
     @http.route('/api/employee/<int:employee_id>', type='http', auth='apikey', methods=['GET', 'OPTIONS'], csrf=False)

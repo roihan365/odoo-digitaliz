@@ -2,14 +2,13 @@ from odoo import http
 from odoo.http import request
 import json
 
-class ApiEmployeeController(http.Controller):
+class EmployeeController(http.Controller):
 
-    def add_cors_headers(self, response):
-        # Add the necessary CORS headers to the response
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-        return response
+    import json
+from odoo import http
+from odoo.http import request
+
+class ApiEmployeeController(http.Controller):
 
     @http.route('/api/employee/<int:employee_id>', type='http', auth='apikey', methods=['GET'], csrf=False)
     def get_employee(self, employee_id, **kwargs):
@@ -18,7 +17,7 @@ class ApiEmployeeController(http.Controller):
             employee = request.env['hr.employee'].sudo().browse(employee_id)
 
             if employee.exists():
-                response = request.make_response(
+                return request.make_response(
                     json.dumps({
                         'status': 'success',
                         'data': {
@@ -31,29 +30,41 @@ class ApiEmployeeController(http.Controller):
                             'position': employee.job_id.name if employee.job_id else None,
                         }
                     }),
-                    headers=[('Content-Type', 'application/json')]
+                    headers=[(
+                        'Content-Type', 'application/json'
+                        'Access-Control-Allow-Origin', '*'
+                        'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
+                        'Access-Control-Allow-Headers', 'Content-Type, Authorization'
+                    )]
                 )
-                return self.add_cors_headers(response)
             else:
-                response = request.make_response(
+                return request.make_response(
                     json.dumps({
                         'status': 'error',
                         'message': 'Record not found'
                     }),
-                    headers=[('Content-Type', 'application/json')]
+                    headers=[(
+                        'Content-Type', 'application/json'
+                        'Access-Control-Allow-Origin', '*'
+                        'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
+                        'Access-Control-Allow-Headers', 'Content-Type, Authorization'
+                    )]
                 )
-                return self.add_cors_headers(response)
-
         except Exception as e:
-            response = request.make_response(
+            return request.make_response(
                 json.dumps({
                     'status': 'error',
                     'message': str(e)  # This will help you capture the actual error
                 }),
-                headers=[('Content-Type', 'application/json')],
+                headers=[(
+                    'Content-Type', 'application/json'
+                    'Access-Control-Allow-Origin', '*'
+                    'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
+                    'Access-Control-Allow-Headers', 'Content-Type, Authorization'
+                )],
                 status=500  # Return a 500 status code
             )
-            return self.add_cors_headers(response)
+
 
     @http.route('/api/employee/all', type='http', auth='apikey', methods=['GET'], csrf=False)
     def get_all_employees(self, **kwargs):
@@ -70,30 +81,29 @@ class ApiEmployeeController(http.Controller):
                 'position': employee.job_id.name if employee.job_id else None,
             } for employee in employees]
 
-            response = request.make_response(
+            return request.make_response(
                 json.dumps({
                     'status': 'success',
                     'data': employee_list
                 }),
-                headers=[('Content-Type', 'application/json')]
+                headers=[(
+                    'Content-Type', 'application/json'
+                    'Access-Control-Allow-Origin', '*'
+                    'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
+                    'Access-Control-Allow-Headers', 'Content-Type, Authorization'
+                )]
             )
-            return self.add_cors_headers(response)
 
         except Exception as e:
-            response = request.make_response(
+            return request.make_response(
                 json.dumps({
                     'status': 'error',
                     'message': str(e)
                 }),
-                headers=[('Content-Type', 'application/json')]
+                headers=[(
+                    'Content-Type', 'application/json'
+                    'Access-Control-Allow-Origin', '*'
+                    'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
+                    'Access-Control-Allow-Headers', 'Content-Type, Authorization'
+                )]
             )
-            return self.add_cors_headers(response)
-
-    @http.route('/api/employee/options', type='http', auth='public', methods=['OPTIONS'], csrf=False)
-    def options(self, **kwargs):
-        # Handle preflight CORS requests
-        response = request.make_response(
-            '',
-            headers=[('Content-Type', 'text/plain')]
-        )
-        return self.add_cors_headers(response)

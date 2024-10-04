@@ -2,12 +2,6 @@ from odoo import http
 from odoo.http import request
 import json
 
-class EmployeeController(http.Controller):
-
-    import json
-from odoo import http
-from odoo.http import request
-
 class ApiEmployeeController(http.Controller):
 
     @http.route('/api/employee/<int:employee_id>', type='http', auth='apikey', methods=['GET'], csrf=False)
@@ -30,12 +24,12 @@ class ApiEmployeeController(http.Controller):
                             'position': employee.job_id.name if employee.job_id else None,
                         }
                     }),
-                    headers=[(
-                        'Content-Type', 'application/json'
-                        'Access-Control-Allow-Origin', '*'
-                        'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
-                        'Access-Control-Allow-Headers', 'Content-Type, Authorization'
-                    )]
+                    headers=[
+                        ('Content-Type', 'application/json'),
+                        ('Access-Control-Allow-Origin', '*'), 
+                        ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
+                        ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+                    ]
                 )
             else:
                 return request.make_response(
@@ -43,12 +37,12 @@ class ApiEmployeeController(http.Controller):
                         'status': 'error',
                         'message': 'Record not found'
                     }),
-                    headers=[(
-                        'Content-Type', 'application/json'
-                        'Access-Control-Allow-Origin', '*'
-                        'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
-                        'Access-Control-Allow-Headers', 'Content-Type, Authorization'
-                    )]
+                    headers=[
+                        ('Content-Type', 'application/json'),
+                        ('Access-Control-Allow-Origin', '*'), 
+                        ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
+                        ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+                    ]
                 )
         except Exception as e:
             return request.make_response(
@@ -56,12 +50,12 @@ class ApiEmployeeController(http.Controller):
                     'status': 'error',
                     'message': str(e)  # This will help you capture the actual error
                 }),
-                headers=[(
-                    'Content-Type', 'application/json'
-                    'Access-Control-Allow-Origin', '*'
-                    'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
-                    'Access-Control-Allow-Headers', 'Content-Type, Authorization'
-                )],
+                headers=[
+                    ('Content-Type', 'application/json'),
+                    ('Access-Control-Allow-Origin', '*'), 
+                    ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
+                    ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+                ],
                 status=500  # Return a 500 status code
             )
 
@@ -86,12 +80,12 @@ class ApiEmployeeController(http.Controller):
                     'status': 'success',
                     'data': employee_list
                 }),
-                headers=[(
-                    'Content-Type', 'application/json'
-                    'Access-Control-Allow-Origin', '*'
-                    'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
-                    'Access-Control-Allow-Headers', 'Content-Type, Authorization'
-                )]
+                headers=[
+                    ('Content-Type', 'application/json'),
+                    ('Access-Control-Allow-Origin', '*'),  
+                    ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
+                    ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+                ]
             )
 
         except Exception as e:
@@ -100,10 +94,10 @@ class ApiEmployeeController(http.Controller):
                     'status': 'error',
                     'message': str(e)
                 }),
-                headers=[(
-                    'Content-Type', 'application/json'
-                    'Access-Control-Allow-Origin', '*'
-                    'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
-                    'Access-Control-Allow-Headers', 'Content-Type, Authorization'
-                )]
+                headers=[
+                    ('Content-Type', 'application/json'),
+                    ('Access-Control-Allow-Origin', '*'),  
+                    ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
+                    ('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+                ]
             )

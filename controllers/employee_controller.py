@@ -5,11 +5,28 @@ import json
 class ApiEmployeeController(http.Controller):
 
     def cors_headers(self):
-        return [
-            ('Access-Control-Allow-Origin', '*'),  
-            ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
-            ('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+        allowed_origins = [
+            'http://hulutalent.test',
+            'https://hulu.dtz-internal-only.com',
+            'https://app.hulutarget.id'
         ]
+
+        # Periksa apakah origin request berada dalam daftar allowed_origins
+        origin = self.request.headers.get('Origin')
+        
+        if origin in allowed_origins:
+            return [
+                ('Access-Control-Allow-Origin', origin),
+                ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
+                ('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+            ]
+        else:
+            # Jika origin tidak diizinkan, tidak memberikan CORS headers
+            return [
+                ('Access-Control-Allow-Origin', 'null'),  # Atau bisa dikosongkan, sesuai kebutuhan
+                ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
+                ('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+            ]
 
     @http.route('/api/employee/<int:employee_id>', type='http', auth='apikey', methods=['GET', 'OPTIONS'], csrf=False)
     def get_employee(self, employee_id, **kwargs):

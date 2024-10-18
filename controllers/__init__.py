@@ -1,1 +1,1 @@
-from . import auth_controller, employee_controller
+from . import auth_controller, employee_controller, attendance_controller

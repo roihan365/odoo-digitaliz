@@ -39,6 +39,7 @@ class ApiEmployeeController(http.Controller):
                         'status': 'success',
                         'data': {
                             'id': employee.id,
+                            'user_id': employee.user_id.id if employee.user_id else None,
                             'name': employee.name,
                             'email': employee.work_email,
                             'phone': employee.work_phone,
@@ -80,6 +81,7 @@ class ApiEmployeeController(http.Controller):
 
             employee_list = [{
                 'id': employee.id,
+                'user_id': employee.user_id.id if employee.user_id else None,
                 'name': employee.name,
                 'email': employee.work_email,
                 'phone': employee.work_phone,
